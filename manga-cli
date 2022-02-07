@@ -6,7 +6,7 @@ cache_dir="${HOME}/.cache/manga-cli"
 dependencies=("cat" "curl" "sed" "awk" "tr" "du" "git" "diff" "patch" "convert" "zathura")
 github_source="https://raw.githubusercontent.com/7USTIN/manga-cli/master/manga-cli"
 # Get rid of junk
-trap "rm -dRf  ${pdf_dir}" INT TERM EXIT
+trap "rm -dRf ${cache_dir}/${mod_manga_title}" INT TERM EXIT
 # Text colors
 red="\033[1;31m"
 green="\033[1;32m"
