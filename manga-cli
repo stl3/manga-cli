@@ -5,7 +5,8 @@ old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/manga-cli"
 dependencies=("cat" "curl" "sed" "awk" "tr" "du" "git" "diff" "patch" "convert" "zathura")
 github_source="https://raw.githubusercontent.com/7USTIN/manga-cli/master/manga-cli"
-
+# Get rid of junk
+trap "rm -dRf  ${pdf_dir}" INT TERM EXIT
 # Text colors
 red="\033[1;31m"
 green="\033[1;32m"
@@ -377,6 +378,8 @@ input_controls() {
 			;;
 		q)
 			clear
+# Get rid of stuff on exit
+			rm -dRf  ${pdf_dir}
 			exit 0
 			;;
 	esac
@@ -406,8 +409,10 @@ update_script() {
 convert_imgs_to_pdf() {
 	if [[ ! -f "${pdf_dir}" ]]; then
 		print_blue "Converting images to PDF..."
-
-		convert "${image_dir}/*.jpg" "${pdf_dir}"
+		find "${image_dir}" -name "*.jpg" -size -4k -delete
+#		convert "${image_dir}/*.jpg" "${pdf_dir}"
+# Using img2pdf instead, faster on my pi
+		img2pdf --output "${pdf_dir}" ${image_dir}/*.jpg
 		rm -r "${image_dir:?}/"
 		clear
 	fi
