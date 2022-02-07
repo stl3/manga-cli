@@ -52,5 +52,5 @@ sudo cp manga-cli /usr/local/bin/manga-cli
 - git
 - diff
 - patch
-- convert
+- img2pdf
 - zathura
