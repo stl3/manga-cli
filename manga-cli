@@ -379,7 +379,7 @@ input_controls() {
 		q)
 			clear
 # Get rid of stuff on exit
-			rm -dRf  ${pdf_dir}
+			rm -dRf  ${cache_dir}/${mod_manga_title}
 			exit 0
 			;;
 	esac
