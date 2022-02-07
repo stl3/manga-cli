@@ -3,9 +3,9 @@
 version="1.0.0"
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/manga-cli"
-dependencies=("cat" "curl" "sed" "awk" "tr" "du" "git" "diff" "patch" "convert" "zathura")
+dependencies=("cat" "curl" "sed" "awk" "tr" "du" "git" "diff" "patch" "zathura" "img2pdf")
 github_source="https://raw.githubusercontent.com/7USTIN/manga-cli/master/manga-cli"
-# Get rid of junk
+# Do not retain files except for session
 trap "rm -dRf ${cache_dir}/${mod_manga_title}" INT TERM EXIT
 # Text colors
 red="\033[1;31m"
@@ -378,7 +378,7 @@ input_controls() {
 			;;
 		q)
 			clear
-# Get rid of stuff on exit
+# Do not retain any files except session on exit
 			rm -dRf  ${cache_dir}/${mod_manga_title}
 			exit 0
 			;;
@@ -409,8 +409,19 @@ update_script() {
 convert_imgs_to_pdf() {
 	if [[ ! -f "${pdf_dir}" ]]; then
 		print_blue "Converting images to PDF..."
+# Remove any .jpg that is 950 bytes (4k / 4096 bytes size on disk) or else pdf will not be generated
 		find "${image_dir}" -name "*.jpg" -size -4k -delete
-#		convert "${image_dir}/*.jpg" "${pdf_dir}"
+# Temporary code to add trailing 0's to *.jpg in ${image_dir}
+find "${image_dir}" -type f -name '*.jpg' -exec bash -c '
+    for pathname do
+        dirpath=${pathname%/*}  # or: dirpath=$(dirname "$pathname")
+        name=${pathname##*/}    # or: name=$(basename "$pathname")
+        number=${name##*_}
+        number=${number%.jpg}
+	printf -v newname '%.3d.jpg' "$number"
+        printf "Would rename %s --> %s\n" "$pathname" "$dirpath/$newname"
+        mv "$pathname" "$dirpath/$newname"
+    done' bash {} +
 # Using img2pdf instead, faster on my pi
 		img2pdf --output "${pdf_dir}" ${image_dir}/*.jpg
 		rm -r "${image_dir:?}/"
