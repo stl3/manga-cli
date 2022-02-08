@@ -34,6 +34,15 @@ Options:
 
 Install dependencies [(See below)](#Dependencies)
 
+### Linux
+
+```sh
+git clone https://github.com/stl3/manga-cli && cd manga-cli
+sudo cp manga-cli /usr/local/bin/manga-cli
+```
+
+### img2pdf
+
 On a Debian- and Ubuntu-based systems, img2pdf can be installed from the official repositories:
 
 `$ apt install img2pdf`
@@ -47,14 +56,6 @@ If you prefer to install from source code use:
 `$ cd img2pdf/
 $ pip3 install .`
 
-
-
-### Linux
-
-```sh
-git clone https://github.com/stl3/manga-cli && cd manga-cli
-sudo cp manga-cli /usr/local/bin/manga-cli
-```
 
 ## Dependencies
 
