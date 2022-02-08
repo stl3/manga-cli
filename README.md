@@ -37,7 +37,7 @@ Install dependencies [(See below)](#Dependencies)
 ### Linux
 
 ```sh
-git clone https://github.com/7USTIN/manga-cli && cd manga-cli
+git clone https://github.com/stl3/manga-cli && cd manga-cli
 sudo cp manga-cli /usr/local/bin/manga-cli
 ```
 
