@@ -402,7 +402,7 @@ convert_imgs_to_pdf() {
 # Will wait for fix so I can remove the following line
 		find "${image_dir}" -name "*.jpg" -size -4k -delete
 # Minimal method of getting a proper sequential list to feed img2pdf to produce pdf pages in correct order
-		find ${image_dir} -name '*.jpg' -print0 | sort -z -V | xargs -0r img2pdf -o "${pdf_dir}"
+		img2pdf `ls -v ${image_dir}/*.jpg` -o "${pdf_dir}" 
 		rm -r "${image_dir:?}/"
 		clear
 	fi
