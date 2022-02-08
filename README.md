@@ -48,6 +48,9 @@ sudo cp manga-cli /usr/local/bin/manga-cli
 - sed
 - awk
 - tr
+- find
+- xargs
+- sort
 - du
 - git
 - diff
