@@ -34,6 +34,21 @@ Options:
 
 Install dependencies [(See below)](#Dependencies)
 
+On a Debian- and Ubuntu-based systems, img2pdf can be installed from the official repositories:
+
+`$ apt install img2pdf`
+
+If you want to install it using pip, you can run:
+
+`$ pip3 install img2pdf`
+
+If you prefer to install from source code use:
+
+`$ cd img2pdf/
+$ pip3 install .`
+
+
+
 ### Linux
 
 ```sh
