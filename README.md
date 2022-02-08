@@ -3,6 +3,7 @@ https://user-images.githubusercontent.com/81305164/152664895-8c1ad584-eea9-4cb2-
 # manga-cli
 
 A Bash script for reading mangas via the terminal by scraping [Mangakakalot](https://mangakakalot.com/).
+Totally based and forked from 7USTIN's manga-cli
 
 ## Table of Contents
 
