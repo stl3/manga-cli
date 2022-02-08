@@ -411,19 +411,8 @@ convert_imgs_to_pdf() {
 		print_blue "Converting images to PDF..."
 # Remove any .jpg that is 950 bytes (4k / 4096 bytes size on disk) or else pdf will not be generated
 		find "${image_dir}" -name "*.jpg" -size -4k -delete
-# Temporary code to add trailing 0's to *.jpg in ${image_dir}
-find "${image_dir}" -type f -name '*.jpg' -exec bash -c '
-    for pathname do
-        dirpath=${pathname%/*}  # or: dirpath=$(dirname "$pathname")
-        name=${pathname##*/}    # or: name=$(basename "$pathname")
-        number=${name##*_}
-        number=${number%.jpg}
-	printf -v newname '%.3d.jpg' "$number"
-        printf "Would rename %s --> %s\n" "$pathname" "$dirpath/$newname"
-        mv "$pathname" "$dirpath/$newname"
-    done' bash {} +
-# Using img2pdf instead, faster on my pi
-		img2pdf --output "${pdf_dir}" ${image_dir}/*.jpg
+# Minimal method of getting a proper sequential list to feed img2pdf to produce pdf pages in correct order
+		find ${image_dir} -name '*.jpg' -print0 | sort -z -V | xargs -0r img2pdf -o "${pdf_dir}"
 		rm -r "${image_dir:?}/"
 		clear
 	fi
