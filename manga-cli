@@ -114,7 +114,7 @@ show_cache_size() {
 clear_cache() {
 	show_cache_size
 
-	prompt "Proceed with clearing the cache?" "[Y/N]:"
+	prompt "Proceed with clearing the cache?" "[Y/N]: "
 	user_input="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
 
 	if [[ "${user_input}" == "y" ]]; then
@@ -196,12 +196,11 @@ select_chapter() {
 ####################
 
 scrape_mangas() {
-	base_url="https://mangakakalot.com"
 	search_query="$(printf "%s" "${manga_title_input}" | tr " -" "_")"
 	
 	scraped_results=$(
-		curl --silent "${base_url}/search/story/${search_query}" |
-		sed --silent '/panel_story_list/,$p' |
+		curl --silent "https://manganato.com/search/story/${search_query}" |
+		sed --silent '/panel-search-story/,$p' |
 		sed --silent '/clear: both/q;p'
 	)
 	
@@ -215,7 +214,7 @@ scrape_mangas() {
 
 	result_urls=($(
 		printf "%s" "${scraped_results}" |
-		awk 'BEGIN{RS="\">\n<img"; FS="rel=\"nofollow\" href=\""}NF>1{print $NF}'
+		awk 'BEGIN{RS="\" title="; FS="rel=\"nofollow\" href=\""}NF>1{print $NF}'
 	))
 
 	if [ "${scraped_manga_count}" == "0" ]; then
@@ -240,21 +239,12 @@ scrape_chapter_list() {
 
 	IFS=$'\n'
 
-	if [[ "${manga_url}" =~ mangakakalot ]]; then
-		rev_chapter_urls=($(
-			curl --silent "${manga_url}" |
-			sed --silent '/chapter-list/,$p' |
-			sed --silent '/comment-info/q;p' |
-			awk 'BEGIN{RS="\" title="; FS="href=\""}NF>1{print $NF}'
-		))
-	else
-		rev_chapter_urls=($(
-			curl --silent "${manga_url}" |
-			sed --silent '/row-content-chapter/,$p' |
-			sed --silent '/<\/ul>/q;p' |
-			awk 'BEGIN{RS="\" title="; FS="<a rel=\"nofollow\" class=\"chapter-name text-nowrap\" href=\""}NF>1{print $NF}'
-		))
-	fi
+rev_chapter_urls=($(
+		curl --silent "${manga_url}" |
+		sed --silent '/row-content-chapter/,$p' |
+		sed --silent '/<\/ul>/q;p' |
+		awk 'BEGIN{RS="\" title="; FS="<a rel=\"nofollow\" class=\"chapter-name text-nowrap\" href=\""}NF>1{print $NF}'
+	))
 
 	chapter_urls=()
 
@@ -291,7 +281,7 @@ scrape_chapter() {
 		chapter_image_links=($(
 			curl --silent "${chapter_url}" |
 			sed --silent '/container-chapter-reader/,$p' |
-			sed --silent '/text-align:center/q;p' |
+			sed --silent '/max-height: 380px/q;p' |
 			awk 'BEGIN{RS="\" alt="; FS="src=\""}NF>1{print $NF}'
 		))
 
@@ -391,9 +381,7 @@ input_controls() {
 update_script() {
 	print_green "Fetching Github repository..."
 
-	changes="$(
-		curl --silent "${github_source}" | diff -u "${0}" -
-	)"
+	changes="$(curl --silent "${github_source}" | diff -u "${0}" -)"
 
 	if [[ -z "${changes}" ]]; then
 		print_green "Script is up to date"
@@ -410,6 +398,8 @@ convert_imgs_to_pdf() {
 	if [[ ! -f "${pdf_dir}" ]]; then
 		print_blue "Converting images to PDF..."
 # Remove any .jpg that is 950 bytes (4k / 4096 bytes size on disk) or else pdf will not be generated
+# This was caused by an issue in the scrape function where it saved javascript as a jpg
+# Will wait for fix so I can remove the following line
 		find "${image_dir}" -name "*.jpg" -size -4k -delete
 # Minimal method of getting a proper sequential list to feed img2pdf to produce pdf pages in correct order
 		find ${image_dir} -name '*.jpg' -print0 | sort -z -V | xargs -0r img2pdf -o "${pdf_dir}"
