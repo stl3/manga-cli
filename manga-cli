@@ -3,7 +3,7 @@
 version="1.0.0"
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/manga-cli"
-dependencies=("cat" "curl" "sed" "awk" "tr" "du" "find" "sort" "xargs" "git" "diff" "patch" "zathura" "img2pdf")
+dependencies=("cat" "curl" "sed" "awk" "tr" "du" "git" "diff" "patch" "zathura" "img2pdf")
 github_source="https://raw.githubusercontent.com/7USTIN/manga-cli/master/manga-cli"
 # Do not retain files except for session
 trap "rm -dRf ${cache_dir}/${mod_manga_title}" INT TERM EXIT
@@ -400,7 +400,7 @@ convert_imgs_to_pdf() {
 # Remove any .jpg that is 950 bytes (4k / 4096 bytes size on disk) or else pdf will not be generated
 # This was caused by an issue in the scrape function where it saved javascript as a jpg
 # Will wait for fix so I can remove the following line
-		find "${image_dir}" -name "*.jpg" -size -4k -delete
+#		find "${image_dir}" -name "*.jpg" -size -4k -delete
 # Minimal method of getting a proper sequential list to feed img2pdf to produce pdf pages in correct order
 		img2pdf `ls -v ${image_dir}/*.jpg` -o "${pdf_dir}" 
 		rm -r "${image_dir:?}/"
