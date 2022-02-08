@@ -3,7 +3,7 @@
 version="1.0.0"
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/manga-cli"
-dependencies=("cat" "curl" "sed" "awk" "tr" "du" "git" "diff" "patch" "zathura" "img2pdf")
+dependencies=("cat" "curl" "sed" "awk" "tr" "du" "find" "sort" "xargs" "git" "diff" "patch" "zathura" "img2pdf")
 github_source="https://raw.githubusercontent.com/7USTIN/manga-cli/master/manga-cli"
 # Do not retain files except for session
 trap "rm -dRf ${cache_dir}/${mod_manga_title}" INT TERM EXIT
