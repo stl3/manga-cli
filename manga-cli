@@ -472,7 +472,6 @@ trap reset_ifs EXIT
 
 check_dependencies
 
-# local chapter_file_path="${$(dirname $(realpath $0))}/chapters."
 chapter_file_path=$(echo "$(dirname $(realpath $0))/chapters.txt")
 
 if [ ! -f ${chapter_file_path} ]; then
