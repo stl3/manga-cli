@@ -317,7 +317,7 @@ scrape_chapter() {
 #################################
 
 get_chapter() {
-    local chapter=$(awk "/^${1}/ {print \$NF}" chapters.txt)
+    local chapter=$(awk "/^${1}/ {print \$NF}" ${chapter_file_path})
 
     if [ -z "${chapter}" ]; then
         chapter=0
@@ -328,12 +328,12 @@ get_chapter() {
 
 set_chapter() {
     local title_no_space="${1// /}"
-    local manga_exists=$([ -z $(awk "/^${title_no_space}/" chapters.txt) ] && echo 0 || echo 1)
+    local manga_exists=$([ -z $(awk "/^${title_no_space}/" ${chapter_file_path}) ] && echo 0 || echo 1)
 
     if [ ${manga_exists} -eq 0 ]; then
-        echo "${title_no_space} ${2}" >> chapters.txt
+        echo "${title_no_space} ${2}" >> ${chapter_file_path}
     else
-        awk "/^${title_no_space}/{\$NF=\"${2}\"} 1" chapters.txt > tmp && mv tmp chapters.txt
+        awk "/^${title_no_space}/{\$NF=\"${2}\"} 1" ${chapter_file_path} > tmp && mv tmp ${chapter_file_path}
     fi
 }
 
@@ -471,6 +471,13 @@ check_dependencies() {
 trap reset_ifs EXIT
 
 check_dependencies
+
+# local chapter_file_path="${$(dirname $(realpath $0))}/chapters."
+chapter_file_path=$(echo "$(dirname $(realpath $0))/chapters.txt")
+
+if [ ! -f ${chapter_file_path} ]; then
+    touch ${chapter_file_path}
+fi
 
 main() {
 	search_manga
