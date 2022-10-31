@@ -171,9 +171,14 @@ select_manga() {
 	else
 		manga_url="${result_urls[${selected_manga_num} - 1]}"
 	fi
+
+    manga_title=$(echo "${result_titles[${selected_manga_num} - 1]}" | tr -d ' ')
 }
 
 select_chapter() {
+    local latest_chapter=$(get_chapter "${manga_title}")
+    printf "${green}Latested read chapter:${no_color} ${blue}${latest_chapter}${no_color}\n"
+
 	if [[ ${chapter_count} -gt 1 ]]; then
 		prompt "Select chapter" "[1-${chapter_count}]: "
 		selected_chapter_num=${reply}
@@ -189,6 +194,8 @@ select_chapter() {
 	else
 		chapter_url="${chapter_urls[${selected_chapter_num} - 1]}"
 	fi
+
+    set_chapter ${manga_title} ${selected_chapter_num}
 }
 
 ####################
@@ -305,6 +312,31 @@ scrape_chapter() {
 	fi
 }
 
+#################################
+# Chapter persistency functions #
+#################################
+
+get_chapter() {
+    local chapter=$(awk "/^${1}/ {print \$NF}" chapters.txt)
+
+    if [ -z "${chapter}" ]; then
+        chapter=0
+    fi
+
+    echo "${chapter}"
+}
+
+set_chapter() {
+    local title_no_space="${1// /}"
+    local manga_exists=$([ -z $(awk "/^${title_no_space}/" chapters.txt) ] && echo 0 || echo 1)
+
+    if [ ${manga_exists} -eq 0 ]; then
+        echo "${title_no_space} ${2}" >> chapters.txt
+    else
+        awk "/^${title_no_space}/{\$NF=\"${2}\"} 1" chapters.txt > tmp && mv tmp chapters.txt
+    fi
+}
+
 ###################
 # Other functions #
 ###################
@@ -344,11 +376,13 @@ input_controls() {
 	case "${user_input}" in
 		n)
 			((selected_chapter_num=selected_chapter_num + 1))
+            set_chapter ${manga_title} ${selected_chapter_num}
 			chapter_url="${chapter_urls[${selected_chapter_num} - 1]}"
 			open_chapter
 			;;
 		p)
 			((selected_chapter_num=selected_chapter_num - 1))
+            set_chapter ${manga_title} ${selected_chapter_num}
 			chapter_url="${chapter_urls[${selected_chapter_num} - 1]}"
 			open_chapter
 			;;
